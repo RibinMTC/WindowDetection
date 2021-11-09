@@ -54,6 +54,7 @@ def trainNet(nth_epoch, train_data_loader, network, optimizer, loss_config, loss
 
     return loss_recorder.get_avg()
 
+
 def validNet(valid_data_loader, network, loss_func, merge_hm_flip_func, merge_tag_flip_func,
              devices, flip_pair, flip_test):
     """
@@ -105,7 +106,7 @@ def validNet(valid_data_loader, network, loss_func, merge_hm_flip_func, merge_ta
             del loss
 
             # because we are using new DataParallel, so need to gather prediction from GPUs
-            if len(devices) > 1: # TODO: check
+            if len(devices) > 1:  # TODO: check
                 heatmaps = gather(heatmaps, 0)
                 tagmaps = gather(tagmaps, 0)
 
@@ -124,9 +125,9 @@ def validNet(valid_data_loader, network, loss_func, merge_hm_flip_func, merge_ta
 
     return torch.cat(heatmaps_list), torch.cat(tagmaps_list), loss_recorder.get_avg()
 
+
 def evalNet(nth_epoch, heatmaps, tagmaps, valid_data_loader, loss_config, test_config,
             patch_width, patch_height, final_output_path):
-
     print("in eval")
 
     heatmaps = nn.UpsamplingBilinear2d((patch_height, patch_width)).cuda()(heatmaps)
@@ -149,7 +150,7 @@ def evalNet(nth_epoch, heatmaps, tagmaps, valid_data_loader, loss_config, test_c
             group_corners_wz_score = \
                 group_corners_on_tags(n_s, parser, heatmaps[n_s], tagmaps[n_s], patch_width, patch_height,
                                       imdb_list[n_s]['im_width'], imdb_list[n_s]['im_height'],
-                                      rectify = test_config.rectify, winScoreThres = test_config.windowT)
+                                      rectify=test_config.rectify, winScoreThres=test_config.windowT)
             windows_list_with_score.append(group_corners_wz_score)
         except Exception as e:
             assert 0, (n_s, e, os.path.basename(imdb_list[n_s]['image']))
@@ -160,9 +161,9 @@ def evalNet(nth_epoch, heatmaps, tagmaps, valid_data_loader, loss_config, test_c
     for name, value in name_value:
         logging.info('Epoch[%d] - Validation %s=%.3f', nth_epoch, name, value)
 
+
 def inferNet(infer_data_loader, network, merge_hm_flip_func, merge_tag_flip_func, flip_pairs,
              patch_width, patch_height, loss_config, test_config, final_output_path, flip_test=True):
-
     print('in valid')
     network.eval()
 
@@ -209,7 +210,7 @@ def inferNet(infer_data_loader, network, merge_hm_flip_func, merge_tag_flip_func
             group_corners_wz_score = \
                 group_corners_on_tags(n_s, parser, heatmaps[n_s], tagmaps[n_s], patch_width, patch_height,
                                       imdb_list[n_s]['im_width'], imdb_list[n_s]['im_height'],
-                                      rectify = test_config.rectify, winScoreThres = test_config.windowT)
+                                      rectify=test_config.rectify, winScoreThres=test_config.windowT)
             windows_list_with_score.append(group_corners_wz_score)
         except Exception as e:
             assert 0, (n_s, e, os.path.basename(imdb_list[n_s]['image']))
@@ -217,3 +218,4 @@ def inferNet(infer_data_loader, network, merge_hm_flip_func, merge_tag_flip_func
 
     # 2. Infer or Evaluate
     facade.plot(windows_list_with_score, imdb_list, final_output_path)
+    return windows_list_with_score

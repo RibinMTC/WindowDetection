@@ -297,8 +297,10 @@ class facade(IMDB):
             for i in range(len(winPred)):
                 temp = {}
                 temp['position'] = np.array(winPred[i]['position'])[:, :2].copy()  # 4x2 array
+                print("window corner positions: ", temp['position'])
                 temp['img_id'] = s_idx  # index of image
                 temp['score'] = winPred[i]['score']  # confident
+                print("window detection confidence: ", temp['score'])
                 ap_pred.append(temp)
 
             visFilename = "vis_" + os.path.basename(im)

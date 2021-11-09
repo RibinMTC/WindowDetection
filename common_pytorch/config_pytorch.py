@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 from easydict import EasyDict as edict
 
+
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -12,6 +13,7 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='window detection')
@@ -26,6 +28,7 @@ def parse_args():
     args, rest = parser.parse_known_args()
     return args
 
+
 # default config
 def get_default_config_pytorch():
     config = edict()
@@ -37,6 +40,7 @@ def get_default_config_pytorch():
     config.loss = ''
     # config.task = 'facade'
     return config
+
 
 def get_default_dataset_config():
     config = edict()
@@ -129,26 +133,38 @@ def update_config_from_args(config, args):
 
     config.dataset.path = args.data
     config.pytorch.output_path = os.path.join(args.out, config.pytorch.output_path)
-    config.pytorch.log_path  = os.path.join(args.out, config.pytorch.log_path)
+    config.pytorch.log_path = os.path.join(args.out, config.pytorch.log_path)
+    print("Test", args)
+    return config
+
+
+def update_config_from_params(config, data, output_path):
+    config = copy.deepcopy(config)
+
+    config.dataset.path = data
+    config.pytorch.output_path = os.path.join(output_path, config.pytorch.output_path)
+    config.pytorch.log_path = os.path.join(output_path, config.pytorch.log_path)
 
     return config
 
+
 from common.utility.augment import get_default_augment_config
 
-# 1. parsing arguments
-s_args = parse_args()
-s_config_file = s_args.cfg
 
-# 2. parsing pytorch config
-s_config = edict()
-s_config.pytorch = get_default_config_pytorch()
-s_config.dataset = get_default_dataset_config()
-s_config.dataiter = get_default_dataiter_config()
-s_config.optimizer = get_default_optimizer_config()
-s_config.train = get_default_train_config()
-s_config.test = get_default_test_config()
-s_config.aug = get_default_augment_config()
-s_config = update_config_from_file(s_config, s_config_file, check_necessity=False)
+# 1. parsing arguments
+# s_args = parse_args()
+# s_config_file = s_args.cfg
+#
+# # 2. parsing pytorch config
+# s_config = edict()
+# s_config.pytorch = get_default_config_pytorch()
+# s_config.dataset = get_default_dataset_config()
+# s_config.dataiter = get_default_dataiter_config()
+# s_config.optimizer = get_default_optimizer_config()
+# s_config.train = get_default_train_config()
+# s_config.test = get_default_test_config()
+# s_config.aug = get_default_augment_config()
+# s_config = update_config_from_file(s_config, s_config_file, check_necessity=False)
 
 def get_base_common_config(config_file):
     base_config = edict()
@@ -161,3 +177,21 @@ def get_base_common_config(config_file):
     base_config.aug = get_default_augment_config()
     base_config = update_config_from_file(base_config, config_file, check_necessity=False)
     return base_config
+
+
+s_args = []
+s_config = edict()
+s_config_file = ""
+
+
+def get_config_files(cfg):
+    s_config = edict()
+    s_config.pytorch = get_default_config_pytorch()
+    s_config.dataset = get_default_dataset_config()
+    s_config.dataiter = get_default_dataiter_config()
+    s_config.optimizer = get_default_optimizer_config()
+    s_config.train = get_default_train_config()
+    s_config.test = get_default_test_config()
+    s_config.aug = get_default_augment_config()
+    s_config = update_config_from_file(s_config, cfg, check_necessity=False)
+    return s_config
