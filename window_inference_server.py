@@ -22,13 +22,15 @@ def recommendation_query():
         request_data = request.get_json()
         image_data = bytes(request_data['ImageBytes'])
         image = Image.open(io.BytesIO(image_data))
-        image.save(dir / "input/test_facade.png")
+        image.save(dir / "input/camera_image.png")
         windows_list_with_score = windowsInferenceModel.infer('input/')
         if len(windows_list_with_score) == 0:
             print("No windows detected!")
             return detected_windows_with_corners
-        detected_windows_with_corners["ImageWindowsCoordinates"] = str(windows_list_with_score)
-        write_window_coordinates_to_json(detected_windows_with_corners)
+
+        json_string = json.dumps(windows_list_with_score)
+        detected_windows_with_corners["ImageWindowsCoordinates"] = json_string
+
         return jsonify(detected_windows_with_corners)
 
     except Exception as e:
@@ -37,14 +39,22 @@ def recommendation_query():
 
 
 def write_window_coordinates_to_json(window_coordinates):
-    with open('output/window_coordinates.json','w') as outfile:
-        json.dump(window_coordinates, outfile)
+    with open('output/window_coordinates.json', 'w') as outfile:
+        json.dump(window_coordinates, outfile, indent=4)
+
+
+def test_windows_list_to_json():
+    windows_list_with_score = windowsInferenceModel.infer('input/')
+    if len(windows_list_with_score) == 0:
+        print("No windows detected!")
+    print(windows_list_with_score)
 
 
 dir = pathlib.Path(__file__).parent.absolute()
 
 windowsInferenceModel = WindowsInferenceModel('experiments/resnet/lr1e-3_x120-90-110_center_b2.yaml',
-                                              'models/resnet18_model_latest.pth.tar', 'input/')
+                                              'models/resnet18_model_latest.pth.tar')
 
 if __name__ == '__main__':
     app.run(port=5005, host='0.0.0.0')
+    #test_windows_list_to_json()

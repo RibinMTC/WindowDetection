@@ -27,7 +27,7 @@ from common_pytorch.blocks.resnet_pose import get_default_network_config, get_po
 
 class WindowsInferenceModel:
 
-    def __init__(self, cfg, model, infer_input_path):
+    def __init__(self, cfg, model):
         s_config = get_config_files(cfg)
         self.config = copy.deepcopy(s_config)
         self.config.network = get_default_network_config()
@@ -35,10 +35,6 @@ class WindowsInferenceModel:
 
         self.config = update_config_from_file(self.config, cfg, check_necessity=True)
         self.config = update_config_from_params(self.config, '.', '.')
-
-        self.output_path = os.path.join(infer_input_path, "infer_result")
-        if not os.path.exists(self.output_path):
-            os.makedirs(self.output_path)
 
         os.environ["CUDA_VISIBLE_DEVICES"] = self.config.pytorch.gpus  # a safer method
         devices = [int(i) for i in self.config.pytorch.gpus.split(',')]
@@ -55,6 +51,10 @@ class WindowsInferenceModel:
         self.net.load_state_dict(ckpt['network'])
 
     def infer(self, images_path):
+        self.output_path = os.path.join(images_path, "infer_result")
+        if not os.path.exists(self.output_path):
+            os.makedirs(self.output_path)
+
         infer_imdbs = glob.glob(images_path + '/*.jpg')
         infer_imdbs += glob.glob(images_path + '/*.png')
         infer_imdbs.sort()
@@ -69,7 +69,8 @@ class WindowsInferenceModel:
                                            self.config.loss, self.config.test,
                                            self.output_path)
 
-        return self.windows_list_post_processing(windows_list_with_score)
+        return self.windows_list_to_json(
+            windows_list_with_score, images_path)  # self.windows_list_post_processing(windows_list_with_score)
 
     def windows_list_post_processing(self, windows_list_with_score):
         ap_pred = []
@@ -79,10 +80,38 @@ class WindowsInferenceModel:
             winPred = windows_list_with_score[image_index]
             for i in range(len(winPred)):
                 score = winPred[i]['score']  # confident
-                if score < 0.85:
-                    continue
+                # if score < 0.85:
+                #     continue
                 temp = np.array(winPred[i]['position'])[:, :2].copy().tolist()
 
                 ap_pred.append(temp)
 
         return ap_pred
+
+    def windows_list_to_json(self, windows_list_with_score, images_path):
+        image_windows_corners_dict_list = []
+        infer_imdbs = glob.glob(images_path + '/*.jpg')
+        infer_imdbs += glob.glob(images_path + '/*.png')
+        for image_index in range(len(windows_list_with_score)):
+
+            image_name = os.path.basename(infer_imdbs[image_index]).split(".")[0]
+            windows_corners_list = []
+
+            winPred = windows_list_with_score[image_index]
+            for i in range(len(winPred)):
+                score = winPred[i]['score']  # confident
+                if score < 0.7:
+                    continue
+                corners = np.array(winPred[i]['position'])[:, :2].copy().tolist()
+                uv_dict_list = []
+                for corner in corners:
+                    uv_dict = {"u": corner[0], "v": corner[1]}
+                    uv_dict_list.append(uv_dict)
+
+                windows_corners_list.append({"corners": uv_dict_list})
+
+            windows_json_dict = {"image_name": image_name, "windows": windows_corners_list}
+            image_windows_corners_dict_list.append(windows_json_dict)
+
+        images_with_windows_corners_dict = {"images_with_windows": image_windows_corners_dict_list}
+        return images_with_windows_corners_dict
