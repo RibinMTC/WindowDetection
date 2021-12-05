@@ -24,7 +24,7 @@ bokeh @ file:///C:/ci/bokeh_1593178781838/work
 boto==2.49.0
 Bottleneck==1.3.2
 brotlipy==0.7.0
-certifi==2020.6.20
+certifi==2021.10.8
 cffi==1.14.0
 chardet==3.0.4
 click==7.1.2
@@ -60,8 +60,10 @@ gevent @ file:///C:/ci/gevent_1593005471151/work
 glob2==0.7
 gmpy2==2.0.8
 greenlet==0.4.16
+gunicorn==20.1.0
 h5py==2.10.0
 HeapDict==1.0.1
+heroku==0.1.4
 html5lib @ file:///tmp/build/80754af9/html5lib_1593446221756/work
 idna @ file:///tmp/build/80754af9/idna_1593446292537/work
 imageio @ file:///tmp/build/80754af9/imageio_1594161405741/work
@@ -98,9 +100,9 @@ matplotlib @ file:///C:/ci/matplotlib-base_1592837548929/work
 mccabe==0.6.1
 menuinst==1.4.16
 mistune==0.8.4
-mkl-fft==1.1.0
-mkl-random==1.1.1
-mkl-service==2.3.0
+mkl-fft==1.3.1
+mkl-random @ file:///C:/ci/mkl_random_1626186184278/work
+mkl-service==2.4.0
 mock==4.0.2
 more-itertools==8.4.0
 mpmath==1.1.0
@@ -115,8 +117,8 @@ nltk @ file:///tmp/build/80754af9/nltk_1592496090529/work
 nose==1.3.7
 notebook==6.0.3
 numba==0.50.1
-numexpr==2.7.1
-numpy==1.18.5
+numexpr @ file:///C:/ci/numexpr_1618856738664/work
+numpy @ file:///C:/ci/numpy_and_numpy_base_1634106873763/work
 numpydoc @ file:///tmp/build/80754af9/numpydoc_1594166760263/work
 olefile==0.46
 opencv-python==4.5.4.58
@@ -158,7 +160,7 @@ pyreadline==2.1
 pyrsistent==0.16.0
 PySocks==1.7.1
 pytest==5.4.3
-python-dateutil==2.8.1
+python-dateutil @ file:///home/ktietz/src/ci/python-dateutil_1611928101742/work
 python-jsonrpc-server @ file:///tmp/build/80754af9/python-jsonrpc-server_1594397536060/work
 python-language-server @ file:///C:/ci/python-language-server_1594162130238/work
 pytz==2020.1
@@ -178,8 +180,8 @@ rope==0.17.0
 Rtree==0.9.4
 ruamel-yaml==0.15.87
 scikit-image==0.16.2
-scikit-learn @ file:///C:/ci/scikit-learn_1592853510272/work
-scipy @ file:///C:/ci/scipy_1592916963468/work
+scikit-learn @ file:///C:/ci/scikit-learn_1635188126022/work
+scipy @ file:///C:/ci/scipy_1630606942584/work
 seaborn==0.10.1
 Send2Trash==1.5.0
 Shapely==1.8.0
