@@ -1,7 +1,7 @@
 import json
 import pathlib
 
-from window_inference_model import WindowsInferenceModel
+from window_detection_api.window_inference_model import WindowsInferenceModel
 
 
 def infer_windows_list():
@@ -13,7 +13,7 @@ def infer_windows_list():
 
 
 def write_window_coordinates_to_json(window_coordinates):
-    with open('output/zhdk_stussihof_window_coordinates.json', 'w') as outfile:
+    with open('../output/zhdk_stussihof_window_coordinates.json', 'w') as outfile:
         json.dump(window_coordinates, outfile, indent=4)
 
 

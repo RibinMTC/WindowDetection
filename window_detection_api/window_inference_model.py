@@ -1,18 +1,16 @@
 import os
 import copy
-import time
 import glob
 import torch
-import logging
 import numpy as np
 from torch.utils.data import DataLoader
 
 # define project dependency
-import _init_paths
+from window_detection_api import _init_paths
 
 # project dependence
 from common_pytorch.dataset.all_dataset import *
-from common_pytorch.config_pytorch import update_config_from_file, update_config_from_args, get_config_files, \
+from common_pytorch.config_pytorch import update_config_from_file, get_config_files, \
     update_config_from_params
 from common_pytorch.common_loss.balanced_parallel import DataParallelModel
 from common_pytorch.net_modules import inferNet
@@ -22,7 +20,7 @@ from loss.heatmap import get_default_loss_config, get_merge_func
 
 from core.loader import infer_facade_Dataset
 
-from common_pytorch.blocks.resnet_pose import get_default_network_config, get_pose_net, init_pose_net
+from common_pytorch.blocks.resnet_pose import get_default_network_config, get_pose_net
 
 
 class WindowsInferenceModel:
@@ -34,7 +32,7 @@ class WindowsInferenceModel:
         self.config.loss = get_default_loss_config()
 
         self.config = update_config_from_file(self.config, cfg, check_necessity=True)
-        self.config = update_config_from_params(self.config, '.', '.')
+        self.config = update_config_from_params(self.config, '.', '..')
 
         os.environ["CUDA_VISIBLE_DEVICES"] = self.config.pytorch.gpus  # a safer method
         devices = [int(i) for i in self.config.pytorch.gpus.split(',')]
