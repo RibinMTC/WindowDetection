@@ -1,4 +1,6 @@
 import pathlib
+import time
+
 from PIL import Image
 import io
 
@@ -23,7 +25,11 @@ def recommendation_query():
         image_data = bytes(request_data['ImageBytes'])
         image = Image.open(io.BytesIO(image_data))
         image.save(dir / "input/camera_image.png")
+
+        start = time.perf_counter()
         windows_list_with_score = windowsInferenceModel.infer('input/')
+        stop = time.perf_counter()
+        print(f"Inference time: { stop - start:0.4f} seconds")
         if len(windows_list_with_score) == 0:
             print("No windows detected!")
             return detected_windows_with_corners
@@ -32,7 +38,6 @@ def recommendation_query():
         detected_windows_with_corners["ImageWindowsCoordinates"] = json_string
 
         return jsonify(detected_windows_with_corners)
-
     except Exception as e:
         print(e)
         return detected_windows_with_corners
